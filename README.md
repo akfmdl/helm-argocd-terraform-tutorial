@@ -154,6 +154,7 @@ sudo docker-compose down
 test 했던 브랜치를 삭제합니다.
 
 ```bash
+git checkout main
 git branch -d test
 ```
 
@@ -162,5 +163,25 @@ git branch -d test
 helm을 사용하여 애플리케이션을 배포합니다.
 
 ```bash
-helm install nginx-chart charts/example
+NAMESPACE="your_namespace"
+helm upgrade --install nginx-chart charts/example -n $NAMESPACE --create-namespace
 ```
+
+NodePort 타입의 서비스가 생성되었습니다. 포트번호를 확인합니다.
+
+```bash
+NODE_PORT=$(kubectl get svc nginx-service -n $NAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
+echo $NODE_PORT
+echo "http://localhost:$NODE_PORT"
+```
+http://localhost:$NODE_PORT 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+
+정리하기
+
+```bash
+helm uninstall nginx-chart -n $NAMESPACE
+kubectl delete namespace $NAMESPACE
+```
+
+### 5. ArgoCD로 애플리케이션 배포
+
