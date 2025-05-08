@@ -193,10 +193,9 @@ BRANCH="your_branch"
 git checkout -b $BRANCH && git push origin $BRANCH --force
 ```
 
-applicationset.yaml의 spec.generators.git.revision 및 spec.source.targetRevision을 배포할 branch로 변경합니다.
+applicationset.yaml의 spec.source.targetRevision을 배포할 branch로 변경합니다.
 
 ```bash
-sed -i "s/revision: main/revision: $BRANCH/" applicationset.yaml
 sed -i "s/targetRevision: main/targetRevision: $BRANCH/" applicationset.yaml
 ```
 
@@ -334,7 +333,7 @@ NODE_PORT=$(kubectl get svc harbor -n $NAMESPACE -o jsonpath='{.spec.ports[0].no
 echo $NODE_PORT
 echo "http://localhost:$NODE_PORT"
 ```
-http://localhost:$NODE_PORT 에 접속하면 harbor에 접속할 수 있습니다. 여기서 github actions에서 push할 project를 생성합니다.
+http://localhost:$NODE_PORT 에 접속하면 harbor에 접속할 수 있습니다. 여기서 github actions에서 push할 public 모드로 project를 생성합니다.
 
 ```yaml
 env:
