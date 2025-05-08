@@ -193,10 +193,11 @@ BRANCH="your_branch"
 git checkout -b $BRANCH && git push origin $BRANCH --force
 ```
 
-applicationset.yaml의 spec.generators.git.revision을 배포할 branch로 변경합니다.
+applicationset.yaml의 spec.generators.git.revision 및 spec.source.targetRevision을 배포할 branch로 변경합니다.
 
 ```bash
 sed -i "s/revision: main/revision: $BRANCH/" applicationset.yaml
+sed -i "s/targetRevision: main/targetRevision: $BRANCH/" applicationset.yaml
 ```
 
 applicationset.yaml의 template.spec.destination.namespace를 배포할 namespace로 변경합니다.

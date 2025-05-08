@@ -16,6 +16,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
+        targetRevision: main
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
