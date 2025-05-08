@@ -190,7 +190,7 @@ branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
 BRANCH="your_branch"
-git checkout -b $BRANCH
+git checkout -b $BRANCH && git push --set-upstream origin $BRANCH
 ```
 
 applicationset.yaml의 spec.generators.git.revision을 배포할 branch로 변경합니다.
