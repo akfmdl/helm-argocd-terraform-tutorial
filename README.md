@@ -75,7 +75,7 @@ branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
 BRANCH="your_branch"
-git checkout -b $BRANCH
+git checkout -b $BRANCH && git push origin $BRANCH --force
 ```
 
 github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
@@ -190,7 +190,7 @@ branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
 BRANCH="your_branch"
-git checkout -b $BRANCH && git push --set-upstream origin $BRANCH
+git checkout -b $BRANCH && git push origin $BRANCH --force
 ```
 
 applicationset.yaml의 spec.generators.git.revision을 배포할 branch로 변경합니다.
@@ -209,13 +209,14 @@ sed -i "s/namespace: default/namespace: $NAMESPACE/" applicationset.yaml
 k8s에 ArgoCD가 설치되어있고 current context가 해당 클러스터를 가리키고 있는 경우, 아래 명령어로 ArgoCD에 애플리케이션을 배포할 수 있습니다.
 
 ```bash
-kubectl apply -f applicationset.yaml
+ARGOCD_NAMESPACE="argocd가 설치된 namespace"
+kubectl apply -f applicationset.yaml -n $ARGOCD_NAMESPACE
 ```
 
 ArgoCD에 애플리케이션이 배포되었습니다. ArgoCD 웹페이지에서도 확인가능하며 kubectl 명령어로도 확인가능합니다.
 
 ```bash
-kubectl get applicationset
+kubectl get applicationset -n $ARGOCD_NAMESPACE
 ```
 
 NodePort 타입의 서비스가 생성되었습니다. 포트번호를 확인합니다.
@@ -231,6 +232,6 @@ http://localhost:$NODE_PORT 에 접속하면 nginx 페이지를 확인할 수 �
 정리하기
 
 ```bash
-kubectl delete -f applicationset.yaml
-# kubectl delete namespace $NAMESPACE
+kubectl delete -f applicationset.yaml -n $ARGOCD_NAMESPACE
+kubectl delete namespace $NAMESPACE
 ```
