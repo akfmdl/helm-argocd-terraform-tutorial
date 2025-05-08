@@ -9,7 +9,7 @@ on:
       - "docker/nginx/index.html"
 
 env:
-  IMAGE_NAME: nginx
+  IMAGE_NAME: goranidocker/nginx
   TARGET_FILE: charts/example/values.yaml
 jobs:
   build-and-push:
@@ -30,8 +30,8 @@ jobs:
           registry: "${{ secrets.REGISTRY_URL }}"
           directory: ./docker/nginx
           dockerfile: ./docker/nginx/Dockerfile
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          username: "${{ secrets.REGISTRY_USERNAME }}"
+          password: "${{ secrets.REGISTRY_PASSWORD }}"
 
       - name: Install yq
         run: |
@@ -41,9 +41,9 @@ jobs:
           chmod +x $HOME/bin/yq
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Update K8S_DAG_IMAGE in values.yaml
+      - name: Update image in values.yaml
         run: |
-          # Find and update the K8S_DAG_IMAGE in the airflow.env array
+          # Find and update the image in the values.yaml
           NEW_IMAGE="${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           yq e -i ".image = \"$NEW_IMAGE\"" ${{ env.TARGET_FILE }}
 

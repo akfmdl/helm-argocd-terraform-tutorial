@@ -25,7 +25,7 @@ Docker, Docker Compose, Github Actions, Helm, ArgoCD, Terraform을 경험해볼 
 ### 1. Docker Compose로 간단한 애플리케이션 배포
 
 ```bash
-cd docker-compose/nginx
+cd docker/nginx
 sudo docker-compose up -d
 ```
 
@@ -40,7 +40,7 @@ sudo docker-compose down
 ### 2. Docker cli로 커스텀 이미지 빌드
 
 ```bash
-cd docker-compose/nginx
+cd docker/nginx
 sudo docker build -t nginx:custom .
 ```
 
@@ -69,7 +69,7 @@ sudo docker-compose down
 
 ### 3. Github Actions로 커스텀 이미지 빌드
 
-docker cli를 사용하지 않고 github actions로 이미지를 빌드하고 푸시합니다. 단, docker registry가 준비되어있어야 합니다. 실습을 하기 전에, https://hub.docker.com/ 에 가입하시고 public repository를 만들어주시기 바랍니다.
+docker cli를 사용하지 않고 github actions로 이미지를 빌드하고 푸시합니다. 단, docker registry가 준비되어있어야 합니다. 실습을 하기 전에, https://hub.docker.com/ 에 가입하셔서 public docker registry를 만들어주시기 바랍니다.
 
 branch를 별도로 만들어서 작업을 진행합니다.
 
@@ -80,9 +80,9 @@ git checkout -b test
 github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
 
 ```bash
-REGISTRY_URL="your_dockerhub_name(예: goranidocker)"
-REGISTRY_USERNAME="your_dockerhub_username"
-REGISTRY_PASSWORD="your_dockerhub_password or token"
+REGISTRY_URL="docker.io"
+REGISTRY_USERNAME="개인 dockerhub 계정 이름(예: goranidocker)"
+REGISTRY_PASSWORD="개인 dockerhub 계정 비밀번호 or token"
 ```
 
 github actions의 workerflow 파일에서 push할 target branch명을 변경합니다.
@@ -92,6 +92,14 @@ on:
   push:
     branches:
       - test
+```
+
+github actions의 workerflow 파일에서 이미지 이름을 변경합니다.
+<개인 dockerhub 계정 이름>/<이미지 이름> 형식으로 변경합니다.
+
+```yaml
+env:
+  IMAGE_NAME: goranidocker/nginx
 ```
 
 docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니다.
@@ -116,4 +124,43 @@ docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니�
 git add .
 git commit -m "update index.html"
 git push
+```
+
+이제 github actions가 자동으로 이미지를 빌드하고 푸시합니다.
+완료되면 docker hub에 가서 이미지가 잘 빌드되었는지 확인해보시기 바랍니다.
+
+docker-compose.yaml 파일에 있는 이미지 이름을 변경
+
+```yaml
+image: <개인 dockerhub 계정 이름>/nginx:latest
+```
+
+배포
+
+```bash
+cd docker/nginx
+sudo docker-compose up -d
+```
+
+http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+docker-compose/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
+
+정리하기
+
+```bash
+sudo docker-compose down
+```
+
+test 했던 브랜치를 삭제합니다.
+
+```bash
+git branch -d test
+```
+
+### 4. Helm으로 애플리케이션 배포
+
+helm을 사용하여 애플리케이션을 배포합니다.
+
+```bash
+helm install nginx-chart charts/example
 ```
