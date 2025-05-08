@@ -1,0 +1,81 @@
+name: 📦 Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docker/nginx/Dockerfile"
+      - "docker/nginx/index.html"
+
+env:
+  IMAGE_NAME: nginx
+  TARGET_FILE: charts/example/values.yaml
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: mr-smithers-excellent/docker-build-push@v6
+        name: Build & push Docker image
+        with:
+          image: "${{ env.IMAGE_NAME }}"
+          tags: ${{ github.sha }}, latest
+          registry: "${{ secrets.REGISTRY_URL }}"
+          directory: ./dags
+          dockerfile: ./dags/Dockerfile
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Install yq
+        run: |
+          echo "Installing yq..."
+          mkdir -p $HOME/bin
+          curl -L https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -o $HOME/bin/yq
+          chmod +x $HOME/bin/yq
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Update K8S_DAG_IMAGE in values.yaml
+        run: |
+          # Find and update the K8S_DAG_IMAGE in the airflow.env array
+          NEW_IMAGE="${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          yq e -i ".image = \"$NEW_IMAGE\"" ${{ env.TARGET_FILE }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet ${{ env.TARGET_FILE }}; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git add ${{ env.TARGET_FILE }}
+          git commit -m "Update image to ${{ github.sha }}"
+
+          # Try to push with retries for potential conflicts
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if git push; then
+              echo "Successfully pushed changes"
+              exit 0
+            else
+              echo "Push failed, retrying..."
+              git pull --rebase
+              RETRY_COUNT=$((RETRY_COUNT+1))
+            fi
+          done
+
+          echo "Failed to push after $MAX_RETRIES attempts"
+          exit 1
