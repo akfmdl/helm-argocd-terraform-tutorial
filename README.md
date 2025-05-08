@@ -74,7 +74,8 @@ docker cli를 사용하지 않고 github actions로 이미지를 빌드하고 �
 branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
-git checkout -b test
+BRANCH="your_branch"
+git checkout -b $BRANCH
 ```
 
 github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
@@ -91,7 +92,7 @@ github actions의 workerflow 파일에서 push할 target branch명을 변경합�
 on:
   push:
     branches:
-      - test
+      - $BRANCH
 ```
 
 github actions의 workerflow 파일에서 이미지 이름을 변경합니다.
@@ -99,7 +100,7 @@ github actions의 workerflow 파일에서 이미지 이름을 변경합니다.
 
 ```yaml
 env:
-  IMAGE_NAME: goranidocker/nginx
+  IMAGE_NAME: <개인 dockerhub 계정 이름>/nginx
 ```
 
 docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니다.
@@ -155,7 +156,7 @@ test 했던 브랜치를 삭제합니다.
 
 ```bash
 git checkout main
-git branch -d test
+git branch -d $BRANCH
 ```
 
 ### 4. Helm으로 애플리케이션 배포
@@ -188,7 +189,14 @@ kubectl delete namespace $NAMESPACE
 branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
-git checkout -b test
+BRANCH="your_branch"
+git checkout -b $BRANCH
+```
+
+applicationset.yaml의 spec.generators.git.revision을 배포할 branch로 변경합니다.
+
+```bash
+sed -i "s/revision: main/revision: $BRANCH/" applicationset.yaml
 ```
 
 applicationset.yaml의 template.spec.destination.namespace를 배포할 namespace로 변경합니다.
