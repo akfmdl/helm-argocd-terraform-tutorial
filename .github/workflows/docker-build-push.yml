@@ -28,8 +28,8 @@ jobs:
           image: "${{ env.IMAGE_NAME }}"
           tags: ${{ github.sha }}, latest
           registry: "${{ secrets.REGISTRY_URL }}"
-          directory: ./dags
-          dockerfile: ./dags/Dockerfile
+          directory: ./docker/nginx
+          dockerfile: ./docker/nginx/Dockerfile
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 

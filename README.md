@@ -70,3 +70,26 @@ sudo docker-compose down
 ### 3. Github Actions로 커스텀 이미지 빌드
 
 docker cli를 사용하지 않고 github actions로 이미지를 빌드하고 푸시합니다. 단, docker registry가 준비되어있어야 합니다. 실습을 하기 전에, https://hub.docker.com/ 에 가입하시고 public repository를 만들어주시기 바랍니다.
+
+branch를 별도로 만들어서 작업을 진행합니다.
+
+```bash
+git checkout -b test
+```
+
+github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
+
+```bash
+REGISTRY_URL="your_dockerhub_name(예: goranidocker)"
+REGISTRY_USERNAME="your_dockerhub_username"
+REGISTRY_PASSWORD="your_dockerhub_password or token"
+```
+
+github actions의 workerflow 파일에서 push할 target branch명을 변경합니다.
+
+```yaml
+on:
+  push:
+    branches:
+      - test
+```
