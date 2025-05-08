@@ -93,3 +93,27 @@ on:
     branches:
       - test
 ```
+
+docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니다.
+
+```bash
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome</title>
+</head>
+
+<body>
+    <h1>Welcome to Github Actions!</h1>
+    <p>This is a custom nginx container built by github actions.</p>
+</body>
+
+</html>
+```
+
+```bash
+git add .
+git commit -m "update index.html"
+git push
+```
