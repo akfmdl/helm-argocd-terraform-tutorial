@@ -110,6 +110,12 @@ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(l
 sudo apt-get update
 sudo apt-get install terraform
 
+# Install argocd
+echo "Installing argocd..."
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+helm install argocd argo/argo-cd
+
 # Print success message
 echo "========================================"
 echo "Installation Complete!"
