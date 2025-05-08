@@ -122,9 +122,9 @@ docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니�
 ```
 
 ```bash
-git add .
+git add docker/nginx/index.html
 git commit -m "update index.html"
-git push
+git push origin $BRANCH --force
 ```
 
 이제 github actions가 자동으로 이미지를 빌드하고 푸시합니다.
@@ -229,9 +229,32 @@ echo "http://localhost:$NODE_PORT"
 
 http://localhost:$NODE_PORT 에 접속하면 nginx 페이지를 확인할 수 있습니다.
 
+nginx content를 변경하고 commit 후 push합니다. charts/example/values.yaml 파일의 content를 변경합니다.
+
+```yaml
+content: This will be changed by ArgoCD
+```
+
+```bash
+git add charts/example/values.yaml
+git commit -m "update nginx content"
+git push origin $BRANCH --force
+```
+
+ArgoCD는 변경사항을 자동으로 감지하고 배포합니다. 잠시 후에 새로운 pod이 배포되면서 변경사항이 적용됩니다. 바로 적용하고 싶으실 경우, ArgoCD 웹페이지에서 Refresh 버튼을 눌러주시면 됩니다.
+
+http://localhost:$NODE_PORT 에 접속해서 위 내용이 보이면 성공입니다.
+
 정리하기
 
 ```bash
 kubectl delete -f applicationset.yaml -n $ARGOCD_NAMESPACE
 kubectl delete namespace $NAMESPACE
+```
+
+test 했던 브랜치를 삭제합니다.
+
+```bash
+git checkout main
+git branch -d $BRANCH
 ```
