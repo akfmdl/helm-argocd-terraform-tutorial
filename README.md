@@ -259,3 +259,99 @@ test 했던 브랜치를 삭제합니다.
 git checkout main
 git branch -d $BRANCH
 ```
+
+### 보너스 - Github Actions workflow에 Self-hoated runner 적용 + Harbor Private Repository 사용
+
+https://github.com/akfmdl/mlops-lifecycle.git 레포지토리에 있는 mlops-platform helm chart를 사용하여 Self-hoated runner를 설치해줍니다. 이 helm chart에는 불필요한 sub chart들이 많으니 charts/mlops-platform/Chart.yaml 파일에서 harbar, gha-runner-scale-set-controller, gha-runner-scale-set를 제외한 나머지 sub chart들을 모두 주석처리합니다.
+
+그리고 아래 명령어를 실행하세요.
+
+```bash
+helm dependency update charts/mlops-platform
+```
+
+helm chart를 설치할 namespace를 생성합니다. mlops-platform helm chart는 기본적으로 mlops-platform namespace를 사용합니다. 다른 namespace를 사용하고 싶으실 경우 values.yaml 모든 namespace관련 내용을 변경해주시기 바랍니다.
+
+```bash
+NAMESPACE="mlops-platform"
+kubectl create namespace $NAMESPACE
+```
+
+Github actions에서 사용할 토큰을 생성합니다.
+https://github.com/settings/tokens 에 접속하여 Personal access tokens (classic)을 생성합니다.
+
+필요 권한:
+- repo: 권한 전체
+
+gha-runner-scale-set에서 사용될 github credential secret을 생성합니다.
+- username: github 사용자 이름
+- email: github 사용자 이메일
+- token: github 토큰
+
+```bash
+kubectl create secret generic github-credential \
+  --from-literal=github_username=<github_username> \
+  --from-literal=github_email=<github_email> \
+  --from-literal=github_token=<github_token> \
+  -n $NAMESPACE
+```
+
+charts/mlops-platform/values.yaml 파일에 아래 내용을 수정해주시기 바랍니다.
+* githubConfigUrl: 본인의 github 레포지토리 url
+* runnerScaleSetName: github actions runner의 이름이 됩니다. 원하는 이름으로 수정하셔도 됩니다.
+
+```yaml
+gha-runner-scale-set:
+  githubConfigUrl: <github 레포지토리 url>
+  runnerScaleSetName: <runner의 이름>
+  githubConfigSecret: github-credential
+```
+
+위 runner 이름을 workflow에 적용합니다.
+
+```yaml
+jobs:
+  build:
+    runs-on: <runner의 이름>
+```
+
+이제 아래 설치 명령어를 실행하세요.
+
+```bash
+helm upgrade --install gha-runner-scale-set charts/mlops-platform -n $NAMESPACE --create-namespace
+```
+
+runner-scale-set-listener가 잘 생성되었는지 확인합니다. 이 pod은 controller에서 생성된 runner를 감지하고 할당하는 역할을 합니다. github actions에서 이벤트가 발생할 경우, 이 pod이 이벤트를 감지하고 runner를 자동으로 할당합니다.
+
+```bash
+kubectl get pods -n $NAMESPACE -l app.kubernetes.io/component=runner-scale-set-listener
+```
+
+harbor도 잘 생성되었는지 확인합니다. harbor는 NodePort 타입의 서비스로 생성되었습니다.
+
+```bash
+NODE_PORT=$(kubectl get svc harbor -n $NAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
+echo $NODE_PORT
+echo "http://localhost:$NODE_PORT"
+```
+http://localhost:$NODE_PORT 에 접속하면 harbor에 접속할 수 있습니다. 여기서 github actions에서 push할 project를 생성합니다.
+
+```yaml
+env:
+  IMAGE_NAME: <project 이름>/<이미지 이름>
+```
+
+github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가했던 변수들을 아래와 같이 수정합니다.
+
+```bash
+REGISTRY_URL="harbor.mlops-platform.svc.cluster.local"
+REGISTRY_USERNAME="admin"
+REGISTRY_PASSWORD="admin"
+```
+
+이제 모든 준비가 끝났습니다. 이제 본인의 github 레포지토리에서 github actions를 테스트해보세요.
+
+이후에 발생하는 일
+- runner-scale-set-controller가 자동으로 runner를 생성합니다.
+- runner-scale-set-listener가 자동으로 runner를 감지하고 할당합니다.
+- harbor private repository에 이미지가 푸시됩니다.
