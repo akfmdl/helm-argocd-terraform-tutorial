@@ -1,3 +1,72 @@
 # helm-argocd-tutorial
 
-A tutorial for deploying a simple application using Helm and ArgoCD.
+Docker, Github Actions, Helm, ArgoCD, Terraform을 경험해볼 수 있는 튜토리얼입니다.
+
+## Prerequisites
+
+* docker, docker-compose
+* k3s
+* kubectl
+* k9s
+* helm
+* argocd
+* terraform
+
+위 패키지들을 설치하는 스크립트는 [install.sh](./install.sh)에 있습니다. 단, 리눅스 기준으로 작성되어 있습니다.
+
+## 설치 방법
+
+```bash
+./install.sh
+```
+
+## 튜토리얼
+
+### 1. Docker Compose로 간단한 애플리케이션 배포
+
+```bash
+cd docker-compose/nginx
+sudo docker-compose up -d
+```
+
+http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+
+정리하기
+
+```bash
+sudo docker-compose down
+```
+
+### 2. Docker cli로 커스텀 이미지 빌드
+
+```bash
+cd docker-compose/nginx
+sudo docker build -t nginx:custom .
+```
+
+docker-compose.yaml 파일에 있는 이미지 이름을 변경
+
+```yaml
+image: nginx:custom
+```
+
+docker registry가 준비되어있지 않을 경우, push하지 않아도 됩니다.
+
+배포
+
+```bash
+sudo docker-compose up -d
+```
+
+http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+docker-compose/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
+
+정리하기
+
+```bash
+sudo docker-compose down
+```
+
+### 3. Github Actions로 커스텀 이미지 빌드
+
+docker cli를 사용하지 않고 github actions로 이미지를 빌드하고 푸시합니다. 단, docker registry가 준비되어있어야 합니다. 실습을 하기 전에, https://hub.docker.com/ 에 가입하시고 public repository를 만들어주시기 바랍니다.
