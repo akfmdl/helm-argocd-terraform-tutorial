@@ -185,3 +185,44 @@ kubectl delete namespace $NAMESPACE
 
 ### 5. ArgoCD로 애플리케이션 배포
 
+branch를 별도로 만들어서 작업을 진행합니다.
+
+```bash
+git checkout -b test
+```
+
+applicationset.yaml의 template.spec.destination.namespace를 배포할 namespace로 변경합니다.
+
+```bash
+NAMESPACE="your_namespace"
+sed -i "s/namespace: default/namespace: $NAMESPACE/" applicationset.yaml
+```
+
+k8s에 ArgoCD가 설치되어있고 current context가 해당 클러스터를 가리키고 있는 경우, 아래 명령어로 ArgoCD에 애플리케이션을 배포할 수 있습니다.
+
+```bash
+kubectl apply -f applicationset.yaml
+```
+
+ArgoCD에 애플리케이션이 배포되었습니다. ArgoCD 웹페이지에서도 확인가능하며 kubectl 명령어로도 확인가능합니다.
+
+```bash
+kubectl get applicationset
+```
+
+NodePort 타입의 서비스가 생성되었습니다. 포트번호를 확인합니다.
+
+```bash
+NODE_PORT=$(kubectl get svc nginx-service -n $NAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
+echo $NODE_PORT
+echo "http://localhost:$NODE_PORT"
+```
+
+http://localhost:$NODE_PORT 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+
+정리하기
+
+```bash
+kubectl delete -f applicationset.yaml
+# kubectl delete namespace $NAMESPACE
+```
