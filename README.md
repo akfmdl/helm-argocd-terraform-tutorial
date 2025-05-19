@@ -59,7 +59,7 @@ sudo docker-compose up -d
 ```
 
 http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
-docker-compose/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
+docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
 
 정리하기
 
@@ -144,7 +144,7 @@ sudo docker-compose up -d
 ```
 
 http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
-docker-compose/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
+docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
 
 정리하기
 
