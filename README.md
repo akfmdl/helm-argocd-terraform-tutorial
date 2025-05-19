@@ -24,12 +24,33 @@ Docker, Docker Compose, Github Actions, Helm, ArgoCD, Terraform을 경험해볼 
 
 ### 1. Docker Compose로 간단한 애플리케이션 배포
 
+COMPOSE_PROJECT_NAME 환경변수를 지정합니다. 이 환경변수는 docker-compose.yaml 파일에서 컨테이너 이름과 네트워크 이름을 생성할 때 사용됩니다.
+
+```bash
+export COMPOSE_PROJECT_NAME="test1"
+```
+
+docker-compose.yaml 파일을 실행합니다.
+
 ```bash
 cd docker/nginx
 sudo docker-compose up -d
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+nginx 컨테이너는 30000-30100 범위의 포트를 순서대로 할당하도록 설정되어 있습니다.
+
+```bash
+    ports:
+      - "30000-30100:80"
+```
+
+어떤 포트로 할당되었는지 확인합니다.
+
+```bash
+sudo docker ps | grep $COMPOSE_PROJECT_NAME
+```
+
+http://localhost:<포트> 에 접속하면 nginx 페이지를 확인할 수 있습니다.
 
 정리하기
 
@@ -58,7 +79,13 @@ docker registry가 준비되어있지 않을 경우, push하지 않아도 됩니
 sudo docker-compose up -d
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+포트 확인
+
+```bash
+sudo docker ps | grep $COMPOSE_PROJECT_NAME
+```
+
+http://localhost:<포트> 에 접속하면 nginx 페이지를 확인할 수 있습니다.
 docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
 
 정리하기
@@ -143,7 +170,13 @@ cd docker/nginx
 sudo docker-compose up -d
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
+포트 확인
+
+```bash
+sudo docker ps | grep $COMPOSE_PROJECT_NAME
+```
+
+http://localhost:<포트> 에 접속하면 nginx 페이지를 확인할 수 있습니다.
 docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
 
 정리하기
