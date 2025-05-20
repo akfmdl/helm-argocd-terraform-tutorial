@@ -3,13 +3,11 @@ version: '3.8'
 services:
   nginx:
     image: nginx:latest
-    container_name: nginx-${COMPOSE_PROJECT_NAME:-default}
     ports:
-      - "30000-30100:80"
+      - "8080:80"
     networks:
       - app-network
 
 networks:
   app-network:
-    name: app-network-${COMPOSE_PROJECT_NAME:-default}
     driver: bridge
