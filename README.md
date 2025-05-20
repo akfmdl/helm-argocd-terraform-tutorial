@@ -87,7 +87,7 @@ branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
 BRANCH="your_branch"
-git checkout -b $BRANCH
+git checkout -b $BRANCH && git push origin $BRANCH --force
 ```
 
 github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
@@ -140,12 +140,15 @@ git push origin $BRANCH --force
 ```
 
 이제 github actions가 자동으로 이미지를 빌드하고 푸시합니다.
-완료되면 docker hub에 가서 이미지가 잘 빌드되었는지 확인해보시기 바랍니다.
+빌드 및 Registry에 푸시된 image name은 ./charts/example/values.yaml 파일에 업데이트됩니다.
+```yaml
+image: docker.io/<IMAGE_NAME>/<IMAGE_TAG>
+```
 
-docker-compose.yaml 파일에 있는 이미지 이름을 변경
+위 image를 docker-compose.yaml 파일의 image로 덮어씌워줍니다.
 
 ```yaml
-image: <개인 dockerhub 계정 이름>/nginx:latest
+image: docker.io/<IMAGE_NAME>/<IMAGE_TAG>
 ```
 
 배포
