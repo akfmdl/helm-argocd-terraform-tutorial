@@ -24,30 +24,39 @@ Docker, Docker Compose, Github Actions, Helm, ArgoCD, Terraform을 경험해볼 
 
 ### 1. Docker Compose로 간단한 애플리케이션 배포
 
-COMPOSE_PROJECT_NAME 환경변수를 지정합니다. 이 환경변수는 docker-compose.yaml 파일에서 컨테이너 이름과 네트워크 이름을 생성할 때 사용됩니다.
-
 docker-compose.yaml 파일을 실행합니다.
-* --project-name: 여러 컨테이너를 실행할 경우, 각 컨테이너의 이름이 프로젝트명-컨테이너이름으로 생성됩니다.
+* PROJECT_NAME: 여러 컨테이너를 실행할 경우, 각 컨테이너의 이름이 프로젝트명-컨테이너이름으로 생성됩니다.
 
 ```bash
+export PROJECT_NAME="your_project_name"
 cd docker/nginx
-sudo docker-compose --project-name <프로젝트명> up
+sudo docker-compose --project-name $PROJECT_NAME up -d
 ```
 
-`failed: port is already allocated` 같은 에러가 발생할경우, 포트를 변경해주세요.
+포트는 기본적으로 30000-32767 범위 중에서 30000번부터 증가하여 할당됩니다.
+
+```bash
+    ports:
+      - "30000-32767:80"
+```
+
+`failed: port is already allocated` 같은 에러가 발생하거나, nginx 페이지가 보이지 않을 경우, 포트 번호가 중복되었을 가능성이 있습니다. 이럴 경우, 특정 포트번호를 명시해주세요.
 
 ```bash
     ports:
       - "변경할 포트:80"
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
-
-정리하기
+어떤 포트로 컨테이너가 실행되고 있는지 확인합니다.
 
 ```bash
-sudo docker-compose down
+PORT=$(sudo docker ps --format "{{.ID}} {{.Names}}" | grep $PROJECT_NAME | awk '{print $1}' | xargs -I {} sudo docker port {} | awk -F'->' '{print $2}' | awk -F':' '{print $2}' | tr -d ' ')
+NGINX_ENDPOINT="http://localhost:$PORT"
+echo NGINX_ENDPOINT=$NGINX_ENDPOINT
 ```
+
+NGINX_ENDPOINT에 접속하면 nginx 페이지를 확인할 수 있습니다.
+
 
 ### 2. Docker cli로 커스텀 이미지 빌드
 
@@ -67,17 +76,18 @@ docker registry가 준비되어있지 않을 경우, push하지 않아도 됩니
 배포
 
 ```bash
-sudo docker-compose --project-name <프로젝트명> up
+sudo docker-compose --project-name $PROJECT_NAME up -d
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
-docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
-
-정리하기
+어떤 포트로 컨테이너가 실행되고 있는지 확인합니다.
 
 ```bash
-sudo docker-compose down
+PORT=$(sudo docker ps --format "{{.ID}} {{.Names}}" | grep $PROJECT_NAME | awk '{print $1}' | xargs -I {} sudo docker port {} | awk -F'->' '{print $2}' | awk -F':' '{print $2}' | tr -d ' ')
+NGINX_ENDPOINT="http://localhost:$PORT"
+echo NGINX_ENDPOINT=$NGINX_ENDPOINT
 ```
+
+NGINX_ENDPOINT에 접속하면 nginx 페이지를 확인할 수 있습니다.
 
 ### 3. Github Actions로 커스텀 이미지 빌드
 
@@ -155,17 +165,19 @@ image: docker.io/<IMAGE_NAME>/<IMAGE_TAG>
 
 ```bash
 cd docker/nginx
-sudo docker-compose --project-name <프로젝트명> up
+sudo docker-compose --project-name $PROJECT_NAME up -d
 ```
 
-http://localhost:8080 에 접속하면 nginx 페이지를 확인할 수 있습니다.
-docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
-
-정리하기
+어떤 포트로 컨테이너가 실행되고 있는지 확인합니다.
 
 ```bash
-sudo docker-compose down
+PORT=$(sudo docker ps --format "{{.ID}} {{.Names}}" | grep $PROJECT_NAME | awk '{print $1}' | xargs -I {} sudo docker port {} | awk -F'->' '{print $2}' | awk -F':' '{print $2}' | tr -d ' ')
+NGINX_ENDPOINT="http://localhost:$PORT"
+echo NGINX_ENDPOINT=$NGINX_ENDPOINT
 ```
+
+NGINX_ENDPOINT에 접속하면 nginx 페이지를 확인할 수 있습니다.
+docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로고침 후 확인)
 
 ### 4. Helm으로 애플리케이션 배포
 
@@ -384,4 +396,17 @@ test 했던 브랜치를 삭제합니다.
 ```bash
 git checkout main
 git branch -d $BRANCH
+git push origin -d $BRANCH
+```
+
+docker 데몬이 저장하고 있는 할당 포트 번호를 리셋하기 위해 재시작 합니다.
+
+```bash
+sudo systemctl restart docker
+```
+
+docker-compose로 실행한 컨테이너를 정리합니다.
+
+```bash
+sudo docker-compose --project-name $PROJECT_NAME down
 ```
