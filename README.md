@@ -252,20 +252,6 @@ ArgoCD는 변경사항을 자동으로 감지하고 배포합니다. 잠시 후�
 
 http://localhost:$NODE_PORT 에 접속해서 위 내용이 보이면 성공입니다.
 
-### 6. 정리하기
-
-```bash
-kubectl delete -f applicationset.yaml -n $ARGOCD_NAMESPACE
-kubectl delete namespace $NAMESPACE
-```
-
-test 했던 브랜치를 삭제합니다.
-
-```bash
-git checkout main
-git branch -d $BRANCH
-```
-
 ### 보너스 - Github Actions workflow에 Self-hoated runner 적용 + Harbor Private Repository 사용
 
 https://github.com/akfmdl/mlops-lifecycle.git 레포지토리에 있는 mlops-platform helm chart를 사용하여 Self-hoated runner를 설치해줍니다. 이 helm chart에는 불필요한 sub chart들이 많으니 charts/mlops-platform/Chart.yaml 파일에서 harbar, gha-runner-scale-set-controller, gha-runner-scale-set를 제외한 나머지 sub chart들을 모두 주석처리합니다.
@@ -342,6 +328,10 @@ echo "http://localhost:$NODE_PORT"
 ```
 http://localhost:$NODE_PORT 에 접속하면 harbor에 접속할 수 있습니다. 여기서 github actions에서 push할 public 모드로 project를 생성합니다.
 
+github actions에서 사용할 이미지 이름을 변경합니다.
+* project 이름은 harbor에서 생성한 project 이름을 사용합니다.
+* 이미지 이름은 본인의 이미지 이름을 사용합니다.
+
 ```yaml
 env:
   IMAGE_NAME: <project 이름>/<이미지 이름>
@@ -357,7 +347,41 @@ REGISTRY_PASSWORD="admin"
 
 이제 모든 준비가 끝났습니다. 이제 본인의 github 레포지토리에서 github actions를 테스트해보세요.
 
+docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니다.
+
+```bash
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome</title>
+</head>
+
+<body>
+    <h1>Welcome to Github Actions!</h1>
+    <p>This is a custom nginx container built by self-hosted runner.</p>
+</body>
+
+</html>
+```
+
 이후에 발생하는 일
 - runner-scale-set-controller가 자동으로 runner를 생성합니다.
 - runner-scale-set-listener가 자동으로 runner를 감지하고 할당합니다.
 - harbor private repository에 이미지가 푸시됩니다.
+- ./charts/example/values.yaml 파일의 image 이름이 harbor에 푸시된 이미지 이름으로 변경됩니다.
+- ArgoCD를 통해 배포된 애플리케이션에 변경사항이 적용됩니다.
+
+### 정리하기
+
+```bash
+kubectl delete -f applicationset.yaml -n $ARGOCD_NAMESPACE
+kubectl delete namespace $NAMESPACE
+```
+
+test 했던 브랜치를 삭제합니다.
+
+```bash
+git checkout main
+git branch -d $BRANCH
+```
