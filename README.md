@@ -87,7 +87,7 @@ branch를 별도로 만들어서 작업을 진행합니다.
 
 ```bash
 BRANCH="your_branch"
-git checkout -b $BRANCH && git push origin $BRANCH --force
+git checkout -b $BRANCH
 ```
 
 github actions에서 사용할 시크릿 변수들을 github 저장소 -> Settings -> Secrets and variables -> Actions -> New repository secret 에 추가합니다.
