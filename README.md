@@ -167,13 +167,6 @@ docker/nginx/index.html에 있는 메세지가 보이면 성공입니다.(새로
 sudo docker-compose down
 ```
 
-test 했던 브랜치를 삭제합니다.
-
-```bash
-git checkout main
-git branch -d $BRANCH
-```
-
 ### 4. Helm으로 애플리케이션 배포
 
 helm을 사용하여 애플리케이션을 배포합니다.
@@ -201,24 +194,23 @@ kubectl delete namespace $NAMESPACE
 
 ### 5. ArgoCD로 애플리케이션 배포
 
-branch를 별도로 만들어서 작업을 진행합니다.
-
-```bash
-BRANCH="your_branch"
-git checkout -b $BRANCH && git push origin $BRANCH --force
-```
-
 applicationset.yaml의 spec.source.targetRevision을 배포할 branch로 변경합니다.
 
 ```bash
-sed -i "s/targetRevision: main/targetRevision: $BRANCH/" applicationset.yaml
+sed -i "s/BRANCH/$BRANCH/g" applicationset.yaml
 ```
 
 applicationset.yaml의 template.spec.destination.namespace를 배포할 namespace로 변경합니다.
 
 ```bash
-NAMESPACE="your_namespace"
-sed -i "s/namespace: default/namespace: $NAMESPACE/" applicationset.yaml
+sed -i "s/NAMESPACE/$NAMESPACE/g" applicationset.yaml
+```
+
+applicationset.yaml의 metadata.name과 template.metadata.name을 배포할 name으로 변경합니다.
+
+```bash
+APPLICATION_NAME="배포할 애플리케이션 이름"
+sed -i "s/APPLICATION_NAME/$APPLICATION_NAME/g" applicationset.yaml
 ```
 
 k8s에 ArgoCD가 설치되어있고 current context가 해당 클러스터를 가리키고 있는 경우, 아래 명령어로 ArgoCD에 애플리케이션을 배포할 수 있습니다.
@@ -260,7 +252,7 @@ ArgoCD는 변경사항을 자동으로 감지하고 배포합니다. 잠시 후�
 
 http://localhost:$NODE_PORT 에 접속해서 위 내용이 보이면 성공입니다.
 
-정리하기
+### 6. 정리하기
 
 ```bash
 kubectl delete -f applicationset.yaml -n $ARGOCD_NAMESPACE

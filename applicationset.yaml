@@ -1,26 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: helm-argocd-terraform-tutorial
+  name: APPLICATION_NAME
 spec:
   generators:
     - git:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        revision: main
+        revision: BRANCH
         directories:
           - path: charts/example
   template:
     metadata:
-      name: "{{path.basename}}"
+      name: APPLICATION_NAME
     spec:
       project: default
       source:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        targetRevision: main
+        targetRevision: BRANCH
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: default
+        namespace: NAMESPACE
       syncPolicy:
         automated:
           prune: true
