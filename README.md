@@ -1,4 +1,4 @@
-# helm-argocd-tutorial
+# helm-argocd-terraform-tutorial
 
 Docker, Docker Compose, Github Actions, Helm, ArgoCD, Terraform을 경험해볼 수 있는 튜토리얼입니다.
 
