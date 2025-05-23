@@ -1,26 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: APPLICATION_NAME
+  name: kjm-nginx
 spec:
   generators:
     - git:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        revision: BRANCH
+        revision: kjm
         directories:
           - path: charts/example
   template:
     metadata:
-      name: APPLICATION_NAME
+      name: kjm-nginx
     spec:
       project: default
       source:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        targetRevision: BRANCH
+        targetRevision: kjm
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: NAMESPACE
+        namespace: kjm
       syncPolicy:
         automated:
           prune: true

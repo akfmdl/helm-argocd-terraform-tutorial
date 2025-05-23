@@ -1,8 +1,8 @@
 services:
   nginx:
-    image: nginx:latest
+    image: kjm/nginx:latest
     ports:
-      - "30000-32767:80"
+      - "30302:80"
     networks:
       - app-network
 
