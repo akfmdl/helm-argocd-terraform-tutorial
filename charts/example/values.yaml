@@ -1,2 +1,2 @@
 content: hello, world!
-image: nginx:latest
+image: nginx:custom
