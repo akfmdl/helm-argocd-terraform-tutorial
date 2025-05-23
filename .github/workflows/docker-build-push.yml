@@ -9,7 +9,7 @@ on:
       - "docker/nginx/index.html"
 
 env:
-  IMAGE_NAME: goranidocker/nginx-jieun
+  IMAGE_NAME: goranidocker/nginx-jieun-v2
   TARGET_FILE: charts/example/values.yaml
 jobs:
   build-and-push:
