@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:custom
     ports:
       - "30000-32767:80"
     networks:
@@ -9,3 +9,4 @@ services:
 networks:
   app-network:
     driver: bridge
+
