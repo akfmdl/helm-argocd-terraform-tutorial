@@ -1,2 +1,2 @@
 content: hello, world!
-image: docker.io/goranidocker/nginx-netroot:4e9142ccc57c2301fc001879a612cc2b6b4d1f46
+image: docker.io/goranidocker/nginx-netroot:6f412896fd43bd78b3851991b8e666bf3219060a
