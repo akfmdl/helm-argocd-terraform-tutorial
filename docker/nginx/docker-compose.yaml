@@ -1,8 +1,8 @@
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:custom
     ports:
-      - "30000-32767:80"
+      - "30030:80"
     networks:
       - app-network
 
