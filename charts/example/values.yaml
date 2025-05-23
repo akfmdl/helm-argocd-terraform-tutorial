@@ -1,2 +1,2 @@
-content: hello, world!
+content: This will be changed by ArgoCD hrjin-app
 image: docker.io/goranidocker/nginx-hrjin:f6c2f51298dcc0b98268a0c69dca5853ebc94c1a
