@@ -1,2 +1,2 @@
-content: hello, world!
+content: This will be changed by ArgoCD - jieun
 image: docker.io/goranidocker/nginx-jieun-v2:3b70c5a6654e732ec17a55d03ac04e42f21a1e24
