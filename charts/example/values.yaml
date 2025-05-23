@@ -1,2 +1,2 @@
-content: hello, world!
+content: This will be changed by ArgoCD
 image: docker.io/goranidocker/nginx-netroot:6f412896fd43bd78b3851991b8e666bf3219060a
