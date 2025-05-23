@@ -1,2 +1,2 @@
 content: hello, world!
-image: nginx:latest
+image: docker.io/goranidocker/nginx-sh:1e8b2c5ee231de1ed7da3256c1d87637002add01
