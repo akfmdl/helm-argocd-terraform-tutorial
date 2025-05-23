@@ -3,13 +3,13 @@ name: 📦 Docker Build and Push
 on:
   push:
     branches:
-      - main
+      - yks
     paths:
       - "docker/nginx/Dockerfile"
       - "docker/nginx/index.html"
 
 env:
-  IMAGE_NAME: goranidocker/nginx
+  IMAGE_NAME: goranidocker/nginx-yks
   TARGET_FILE: charts/example/values.yaml
 jobs:
   build-and-push:
