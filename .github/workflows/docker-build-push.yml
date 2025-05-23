@@ -3,13 +3,13 @@ name: 📦 Docker Build and Push
 on:
   push:
     branches:
-      - main
+      - shelley
     paths:
       - "docker/nginx/Dockerfile"
       - "docker/nginx/index.html"
 
 env:
-  IMAGE_NAME: goranidocker/nginx
+  IMAGE_NAME: goranidocker/nginx-shelley
   TARGET_FILE: charts/example/values.yaml
 jobs:
   build-and-push:
