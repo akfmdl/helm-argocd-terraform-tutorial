@@ -1,2 +1,2 @@
-content: hello, world!
+content: This will be changed by ArgoCD
 image: docker.io/goranidocker/nginx-jungho:851836e4a3df308d6e2d462f20cbfd972bd732ab
