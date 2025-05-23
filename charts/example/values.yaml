@@ -1,2 +1,2 @@
-content: hello, world!
+content: !!!Hello World!!!
 image: docker.io/goranidocker/nginx-sumin:a4ef77a448dba9cdf043ae13d337541fc3a950fb
