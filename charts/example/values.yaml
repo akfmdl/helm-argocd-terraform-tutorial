@@ -1,2 +1,2 @@
 content: hello, world!
-image: nginx:latest
+image: docker.io/goranidocker/nginx-jeparkk:918bd985ce11de4478ebd90290c0410b17b548e0
