@@ -1,2 +1,2 @@
-content: hello, world!
-image: nginx:latest
+content: This will be changed by ArgoCD
+image: goranidocker/nginx-sbchoi29:latest
