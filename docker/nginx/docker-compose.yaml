@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:custom
+    image: nginx-jieun-v2:
     ports:
       - "30000-32767:80"
     networks:
