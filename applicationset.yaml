@@ -1,26 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: APPLICATION_NAME
+  name: kodo-app
 spec:
   generators:
     - git:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        revision: BRANCH
+        revision: kodo
         directories:
           - path: charts/example
   template:
     metadata:
-      name: APPLICATION_NAME
+      name: kodo-app
     spec:
       project: default
       source:
         repoURL: https://github.com/akfmdl/helm-argocd-terraform-tutorial.git
-        targetRevision: BRANCH
+        targetRevision: kodo
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: NAMESPACE
+        namespace: kodo
       syncPolicy:
         automated:
           prune: true
