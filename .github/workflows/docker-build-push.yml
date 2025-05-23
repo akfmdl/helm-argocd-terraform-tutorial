@@ -3,7 +3,7 @@ name: 📦 Docker Build and Push
 on:
   push:
     branches:
-      - sbchoi29  
+      - sbchoi29 
     paths:
       - "docker/nginx/Dockerfile"
       - "docker/nginx/index.html"
