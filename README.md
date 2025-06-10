@@ -214,8 +214,10 @@ nginx content를 변경하고 commit 후 push합니다. charts/example/values.ya
 content: This will be changed by ArgoCD
 ```
 
+수정한 모든 파일들을 add 후 commit 후 push합니다.
+
 ```bash
-git add charts/example/values.yaml
+git add .
 git commit -m "update nginx content"
 git push origin $BRANCH --force
 ```
