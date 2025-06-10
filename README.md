@@ -111,9 +111,11 @@ docker/nginx/index.html 파일의 내용을 변경하고 commit 후 push합니�
 </html>
 ```
 
+수정한 모든 파일들을 add 후 commit 후 push합니다.
+
 ```bash
-git add docker/nginx/index.html
-git commit -m "update index.html"
+git add .
+git commit -m "update index.html and workflow"
 git push origin $BRANCH --force
 ```
 
